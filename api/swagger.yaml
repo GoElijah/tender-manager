@@ -1,0 +1,1350 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: Tender API
+  description: API for tenders and bids
+tags:
+  - name: Tenders
+  - name: Bids
+
+paths:
+  /api/ping:
+    get:
+      operationId: Ping
+      responses:
+        '200':
+          description: ping response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pong'
+
+  /api/tenders/new:
+    post:
+      tags:
+        - Tenders
+      summary: Create a new tender
+      operationId: CreateTender
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTenderRequest'
+      responses:
+        '201':
+          description: Tender successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTenderResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/tenders/publish:
+    put:
+      tags:
+        - Tenders
+      summary: Publish created tender
+      operationId: PublishTender
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishTenderRequest'
+      responses:
+        '200':
+          description: Tender successfully published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishTenderResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/tenders/close:
+    put:
+      tags:
+        - Tenders
+      summary: Close tender
+      operationId: CloseTender
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseTenderRequest'
+      responses:
+        '200':
+          description: Tender successfully closed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloseTenderResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/tenders/{tenderId}/edit:
+    patch:
+      tags:
+        - Tenders
+      summary: Patch tender
+      operationId: PatchTender
+      parameters:
+        - name: tenderId
+          in: path
+          description: Tender ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Tender edit details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchTenderRequest'
+      responses:
+        '200':
+          description: Tender successfully patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchTenderResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/tenders:
+    post:
+      tags:
+        - Tenders
+      summary: Get all tenders
+      operationId: ListTenders
+      requestBody:
+        description: Tender list for user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListTendersRequest'
+      parameters:
+        - in: query
+          name: serviceType
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tenders successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListTendersResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/tenders/my:
+    get:
+      tags:
+        - Tenders
+      summary: Get all tenders for the current user
+      operationId: ListMyTenders
+      parameters:
+        - in: query
+          name: username
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tenders successfully retrieved for current user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListTendersResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/tenders/{tenderId}/status:
+    get:
+      tags:
+        - Tenders
+      summary: Get tender status
+      operationId: GetTenderStatus
+      parameters:
+        - name: tenderId
+          in: path
+          description: Tender ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tender status was found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTenderStatusResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/tenders/{tenderId}/version:
+    get:
+      tags:
+        - Tenders
+      summary: Get tender version
+      operationId: GetTenderVersion
+      parameters:
+        - name: tenderId
+          in: path
+          description: Tender ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tender version was found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTenderVersionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/tenders/{tenderId}/rollback/{version}:
+    put:
+      tags:
+        - Tenders
+      summary: Rollback Tender
+      operationId: RollbackTender
+      parameters:
+        - name: tenderId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Tender edit details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackTenderRequest'
+      responses:
+        '200':
+          description: Tender successfully rollbacked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RollbackTenderResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+  /api/bids/feedback:
+    put:
+      tags:
+        - Bids
+      summary: Add bid feedback
+      operationId: Feedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackRequest'
+      responses:
+        '200':
+          description: Bids feedback successfully published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/bids/{tenderId}/reviews:
+    get:
+      tags:
+        - Bids
+      summary: List feedback from bids user
+      operationId: ListFeedback
+      parameters:
+        - in: path
+          name: tenderId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: authorUsername
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: organizationId
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Bids successfully retrieved for current user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListFeedback'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/bids/new:
+    post:
+      tags:
+        - Bids
+      summary: Create a new bid
+      operationId: CreateBid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBidRequest'
+      responses:
+        '201':
+          description: Bid successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBidResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/bids/{bidId}/status:
+    get:
+      tags:
+        - Bids
+      summary: Get Bid status
+      operationId: GetBidStatus
+      parameters:
+        - name: bidId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Bid status was found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBidStatusResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/bids/{bidId}/version:
+    get:
+      tags:
+        - Bids
+      summary: Get bid version
+      operationId: GetBidVersion
+      parameters:
+        - name: bidId
+          in: path
+          description: Bid ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Bid version was found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBidVersionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/bids/publish:
+    put:
+      tags:
+        - Bids
+      summary: Publish bid
+      operationId: PublishBid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishBidRequest'
+      responses:
+        '200':
+          description: Bid successfully published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishBidResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/bids/cancel:
+    put:
+      tags:
+        - Bids
+      summary: Cancel bid
+      operationId: CancelBid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelBidRequest'
+      responses:
+        '200':
+          description: Bid successfully canceled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelBidResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/bids/{bidId}/edit:
+    patch:
+      tags:
+        - Bids
+      summary: Patch bid
+      operationId: PatchBid
+      parameters:
+        - name: bidId
+          in: path
+          description: Bid ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Bid edit details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchBidRequest'
+      responses:
+        '200':
+          description: Tender successfully patched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatchBidResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/bids/submit_decision:
+    put:
+      tags:
+        - Bids
+      summary: Submit bid decision
+      operationId: SubmitBid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitDecisionBidRequest'
+      responses:
+        '200':
+          description: Bid decision successfully submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionBidResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/bids/reject_decision:
+    put:
+      tags:
+        - Bids
+      summary: Reject bid decision
+      operationId: RejectBid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectDecisionBidRequest'
+      responses:
+        '200':
+          description: Bid decision successfully rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionBidResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/bids/{tenderId}/list:
+    post:
+      tags:
+        - Bids
+      parameters:
+        - name: tenderId
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Get all Bids for tender
+      operationId: ListBids
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListBidsRequest'
+      responses:
+        '200':
+          description: Bids successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListBidsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/bids/my:
+    get:
+      tags:
+        - Bids
+      summary: Get all Bids for the current user
+      operationId: ListMyBids
+      parameters:
+        - in: query
+          name: username
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Bids successfully retrieved for current user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListBidsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/bids/{bidId}/rollback/{version}:
+    put:
+      tags:
+        - Bids
+      summary: Rollback Bid
+      operationId: RollbackBid
+      parameters:
+        - name: bidId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RollbackBidRequest'
+      responses:
+        '200':
+          description: Tender successfully rollbacked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RollbackBidResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+components:
+  schemas:
+    SubmitDecisionBidRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        bidId:
+          type: string
+      required:
+        - username
+        - bidId
+    RejectDecisionBidRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        bidId:
+          type: string
+      required:
+        - username
+        - bidId
+    PatchBidRequest:
+      type: object
+      properties:
+        editorUsername:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - editorUsername
+        - name
+        - description
+    CancelBidRequest:
+      type: object
+      properties:
+        cancelUsername:
+          type: string
+        bidId:
+          type: string
+      required:
+        - cancelUsername
+        - bidId
+    PublishBidRequest:
+      type: object
+      properties:
+        publisherUsername:
+          type: string
+        bidId:
+          type: string
+      required:
+        - publisherUsername
+        - bidId
+    FeedbackRequest:
+      type: object
+      properties:
+        publisherUsername:
+          type: string
+        bidId:
+          type: string
+        feedback:
+          type: string
+      required:
+        - publisherUsername
+        - bidId
+        - feedback
+    CreateBidRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        tenderId:
+          type: string
+        tender_organization:
+          type: string
+        bid_organization:
+          type: string
+        creatorUsername:
+          type: string
+      required:
+        - name
+        - description
+        - tenderId
+        - tender_organization
+        - bid_organization
+        - creatorUsername
+
+    CreateTenderRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        serviceType:
+          type: string
+        organizationId:
+          type: string
+        creatorUsername:
+          type: string
+      required:
+        - name
+        - description
+        - serviceType
+        - organizationId
+        - creatorUsername
+    CreateTenderResponse:
+      type: object
+      properties:
+        tenderId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - tenderId
+        - name
+        - description
+
+    PublishTenderRequest:
+      type: object
+      properties:
+        publisherUsername:
+          type: string
+        tenderId:
+          type: string
+      required:
+        - tenderId
+        - publisherUsername
+    PublishTenderResponse:
+      type: object
+      properties:
+        tenderId:
+          type: string
+        status:
+          type: string
+      required:
+        - tenderId
+        - status
+
+    CloseTenderRequest:
+      type: object
+      properties:
+        closerUsername:
+          type: string
+        tenderId:
+          type: string
+      required:
+        - tenderId
+        - closerUsername
+    CloseTenderResponse:
+      type: object
+      properties:
+        tenderId:
+          type: string
+        status:
+          type: string
+      required:
+        - tenderId
+        - status
+
+    PatchTenderResponse:
+      type: object
+      properties:
+        tenderId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - tenderId
+        - name
+        - description
+    PatchTenderRequest:
+      type: object
+      properties:
+        editorUsername:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - editorUsername
+
+    ListTendersRequest:
+      type: object
+      properties:
+        username:
+          type: string
+      required:
+        - username
+    ListTendersResponse:
+      type: array
+      xml:
+        name: tenders
+        wrapped: true
+      items:
+        $ref: '#/components/schemas/Tender'
+
+
+    ListBidsRequest:
+      type: object
+      properties:
+        username:
+          type: string
+      required:
+        - username
+    ListBidsResponse:
+      type: array
+      xml:
+        name: tenders
+        wrapped: true
+      items:
+        $ref: '#/components/schemas/Bid'
+    ListFeedback:
+      type: array
+      xml:
+        name: tenders
+        wrapped: true
+      items:
+        $ref: '#/components/schemas/feedback'
+
+
+    GetBidStatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        id:
+          type: string
+      required:
+        - status
+        - id
+    GetTenderStatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        id:
+          type: string
+      required:
+        - status
+        - id
+
+    GetTenderVersionRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        id:
+          type: string
+      required:
+        - id
+        - username
+    GetTenderVersionResponse:
+      type: object
+      properties:
+        version:
+          type: string
+        id:
+          type: string
+      required:
+        - version
+        - id
+    GetBidVersionResponse:
+      type: object
+      properties:
+        version:
+          type: string
+        id:
+          type: string
+      required:
+        - version
+        - id
+
+    RollbackTenderRequest:
+      type: object
+      properties:
+        username:
+          type: string
+      required:
+        - username
+    RollbackTenderResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        version:
+          type: string
+      required:
+        - id
+        - name
+        - description
+        - version
+
+    RollbackBidRequest:
+      type: object
+      properties:
+        username:
+          type: string
+      required:
+        - username
+    RollbackBidResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        version:
+          type: string
+      required:
+        - id
+        - name
+        - description
+        - version
+
+    feedback:
+      type: object
+      properties:
+        bidId:
+          type: string
+        review:
+          type: string
+
+    Bid:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        tenderId:
+          type: string
+    Tender:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        serviceType:
+          type: string
+
+    CreateBidResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - id
+        - name
+        - description
+
+    PatchBidResponse:
+      type: object
+      properties:
+        bidId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - bidId
+        - name
+        - description
+    CancelBidResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+      required:
+        - name
+        - status
+    DecisionBidResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+        votes:
+          type: integer
+      required:
+        - name
+        - status
+        - votes
+    PublishBidResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+      required:
+        - id
+        - status
+    FeedbackResponse:
+      type: object
+      properties:
+        feedback:
+          type: string
+        bidId:
+          type: string
+      required:
+        - feedback
+        - bidId
+
+    Pong:
+      type: object
+      required:
+        - ping
+      properties:
+        ping:
+          type: string
+          example: ok
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Description of the error
+      required:
+        - error
